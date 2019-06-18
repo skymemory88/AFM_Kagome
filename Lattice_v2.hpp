@@ -242,19 +242,42 @@ std::vector<int> lattice<T, format>::NNNindex(int x, int y, int z) ////return th
     }
 }
 
-template<class T, LatticeForm format>
+template <class T, LatticeForm format>
 void lattice<T, format>::map(const std::string title, const int offset) //map the array to data file base on the lattice format
 {
-		std::ofstream fout;
-		fout.precision();
-		fout.open(title.c_str());
-		for (int j = offset; j < (ysize - offset); ++j)
-		{
-			for (int i = offset; i < (xsize - offset); ++i)
-			{
-				fout << (int)val[index(i, j)] << "\t";
-			}
-			fout << std::endl;
-		}
+    switch (format)
+    {
+    case LatticeForm::square:
+    {
+        std::ofstream fout;
+        fout.precision();
+        fout.open(title.c_str());
+        for (int j = offset; j < (ysize - offset); ++j)
+        {
+            for (int i = offset; i < (xsize - offset); ++i)
+            {
+                fout << (int)val[index(i, j)] << "\t";
+            }
+            fout << std::endl;
+        }
         fout.close();
+    }
+    case LatticeForm::triangular:
+    {
+        std::ofstream fout;
+        fout.precision();
+        fout.open(title.c_str());
+        for (int j = offset; j < (ysize - offset); ++j)
+        {
+            if(j % 2 == 0)
+                fout << "\t";
+            for (int i = offset; i < (xsize - offset); ++i)
+            {
+                fout << (int)val[index(i, j)] << "\t" << "\t";
+            }
+            fout << std::endl;
+        }
+        fout.close();
+    }
+    }
 }
