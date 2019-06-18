@@ -1,4 +1,4 @@
-#include "Lattice.hpp"
+#include "Lattice_v2.hpp"
 #include "mtrand.hpp"
 #include <cstdlib>
 #include <iostream>
@@ -11,21 +11,21 @@ using namespace std;
 int main(int argc, char **argv)
 {
     if (argc != 6)
-        throw runtime_error("Incorrect argument number! 1. x_size, 2. y_size, 3. z_size, 4. Iteration limit, 5. Normalized coupling strength");
+        throw runtime_error("Incorrect argument number! 1. x_size, 2. y_size, 3. z_size, 4. Normalized coupling strength, 5. Iteration limit");
     mtrand Rand(time(0));
     //const int dimension = 2;     //set space dimension, option: 1,2,3
     int local_xsize = atoi(argv[1]); //set local lattice size in x direction
     int local_ysize = atoi(argv[2]); //set local lattice size in y direction
     //int local_zsize = atoi(argv[3]); //set local lattice size in z direction   
-    const int limit = atoi(argv[4]); //set the limit of how may rounds the simulation can evolve
-    int halo = 1;          //set halo size for the local lattice
+    const int limit = atoi(argv[5]); //set the limit of how many rounds the simulation can evolve
+    int halo = 2;          //set halo size for the local lattice
     clock_t t_start = clock(); //bench mark time point
 
     lattice<signed char, LatticeForm::square> grid(local_xsize + 2 * halo, local_ysize + 2 * halo);
     //initialize a local lattice with halo boarder, options: "square", "kagome", "triangular", "circular"
     printf("Grid size: %d x %d. Halo size: %d.\n", grid.xsize, grid.ysize, halo);
 
-    const double K = atof(argv[5]);     //K contains info regarding coupling strength to thermal fluctuation ratio
+    const double K = atof(argv[4]);     //K contains info regarding coupling strength to thermal fluctuation ratio
     const double epsilon = 2.0 * sqrt(0.5); //define toloerance as the smallest energy difference can be produced, other than zero, by flipping one spin
     double E_site = 0.0;           //declare local energy
     double E_old = 0.0;            //declare energy before updates
@@ -55,6 +55,12 @@ int main(int argc, char **argv)
     } //calculate the total energy of the initial configuration
     cout << "Initial energy: " << E_new << endl;
 
+    // //////////////////////////Checkpoint////////////////////////
+    // auto near = grid.NN((int)local_xsize/2, (int)local_ysize/2);
+    // auto nearE = std::accumulate(near.begin(),near.end(),0);
+    // cout << "Nearest energy:" << nearE << endl;
+    // //////////////////////////Checkpoint////////////////////////
+
     ///////////////////////////////start updating algorithm//////////////////////////////
    
     ofstream fout;
@@ -69,9 +75,11 @@ int main(int argc, char **argv)
         {
             for (int j = halo; j < grid.ysize - halo; j++)
             {
-                    auto nearest = std::accumulate(grid.NN(i,j).begin(), grid.NN(i,j).end(), 0);
-                    auto nextnear = std::accumulate(grid.NNN(i,j).begin(), grid.NNN(i,j).end(), 0);
-                E_site = -1.0 * grid(i, j) * nearest + -1.0 * sqrt(0.5) * grid(i, j) * nextnear;
+                auto nearest = grid.NN(i,j);
+                auto nextnear = grid.NNN(i,j);
+                auto nearestE = std::accumulate(nearest.begin(), nearest.end(), 0.0);
+                auto nextnearE = std::accumulate(nextnear.begin(), nextnear.end(), 0.0);
+                E_site = -1.0 * grid(i, j) * nearestE + -1.0 * sqrt(0.5) * grid(i, j) * nextnearE;
                 if (E_site > 0) //can be replaced with explicit "E_init > E_fin" conditions
                 {
                     new_grid(i, j) = -grid(i, j);
