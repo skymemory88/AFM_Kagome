@@ -35,6 +35,7 @@ class lattice
         void set_value(int x, int y, int z, T value);
         void map(std::string title, int offset);
         std::vector<T> NN(int x, int y); //Retrieve the values of all nearest neighbours
+        std::vector<T> NN(int x, int y, int z); //Retrieve the values of all nearest neighbours        
         std::vector<int> NNindex(int x, int y); //Retrieve the indices of all nearest neighbours
         std::vector<int> NNindex(int x, int y, int z); //Retrieve the indices of all nearest neighbours       
         std::vector<T> NN(int x, int y, int z);
@@ -147,24 +148,6 @@ void lattice<T, format>::set_value(int x, int y, int z, T value)
 }
 
 template <class T, LatticeForm format>
-std::vector<int> lattice<T, format>::NNindex(int x, int y) //return the indices of the nearest neighbours of the input coordinate
-{
-    switch (format)
-    {
-    case LatticeForm::square:
-        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1)};
-    case LatticeForm::triangular:
-        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
-    case LatticeForm::kagome: //kagome implements the same lattice structure as triangular except for, in practice in the code, skips every the other site in every the other row.
-        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
-    case LatticeForm::circular:
-        return {index(x + 1, y), index(x -1, y)}; //To be defined
-    default:  //default to square lattice
-        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1)};
-    }
-}
-
-template <class T, LatticeForm format>
 std::vector<T> lattice<T, format>::NN(int x, int y) ////return the values of the nearest neighbours of the input coordinate
 {
     switch (format)
@@ -191,6 +174,24 @@ std::vector<T> lattice<T, format>::NN(int x, int y, int z) //return the values o
         return {val[index(x + 1, y, z)], val[index(x - 1, y, z)], val[index(x, y + 1, z)], val[index(x, y - 1, z)], val[index(x, y, z + 1)], val[index(x, y, z - 1)]};
     default: //default to cubic lattice
         return {val[index(x + 1, y, z)], val[index(x - 1, y, z)], val[index(x, y + 1, z)], val[index(x, y - 1, z)], val[index(x, y, z + 1)], val[index(x, y, z - 1)]};
+    }
+}
+
+template <class T, LatticeForm format>
+std::vector<int> lattice<T, format>::NNindex(int x, int y) //return the indices of the nearest neighbours of the input coordinate
+{
+    switch (format)
+    {
+    case LatticeForm::square:
+        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1)};
+    case LatticeForm::triangular:
+        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
+    case LatticeForm::kagome: //kagome implements the same lattice structure as triangular except for, in practice in the code, skips every the other site in every the other row.
+        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
+    case LatticeForm::circular:
+        return {index(x + 1, y), index(x -1, y)}; //To be defined
+    default:  //default to square lattice
+        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1)};
     }
 }
 
@@ -225,7 +226,7 @@ std::vector<T> lattice<T, format>::NNN(int x, int y) ////return the values of th
 }
 
 template <class T, LatticeForm format>
-std::vector<int> lattice<T, format>::NNNindex(int x, int y, int z) ////return the values of the nearest neighbours of the input coordinate
+std::vector<int> lattice<T, format>::NNNindex(int x, int y) ////return the values of the nearest neighbours of the input coordinate
 {
     switch (format)
     {
