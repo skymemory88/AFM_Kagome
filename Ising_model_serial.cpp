@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     int halo = 2;          //set halo size for the local lattice
     clock_t t_start = clock(); //bench mark time point
 
-    lattice<signed char, LatticeForm::square> grid(local_xsize + 2 * halo, local_ysize + 2 * halo);
+    lattice<signed char, LatticeForm::triangular> grid(local_xsize + 2 * halo, local_ysize + 2 * halo);
     //initialize a local lattice with halo boarder, options: "square", "kagome", "triangular", "circular"
     printf("Grid size: %d x %d. Halo size: %d.\n", grid.xsize, grid.ysize, halo);
 
