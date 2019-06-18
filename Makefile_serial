@@ -7,7 +7,7 @@ EXE=Ising_model_serial
 all: clean ${EXE}
 	  
 $(EXE): ${EXE}.cpp
-	${CXX} ${CXXFLAGS} -o ${EXE} ${EXE}.cpp mtrand.hpp Lattice.hpp
+	${CXX} ${CXXFLAGS} -o ${EXE} ${EXE}.cpp mtrand.hpp Lattice_v2.hpp
 
 clean:
 	rm -f ${EXE} ${EXE}.o 2>&-
