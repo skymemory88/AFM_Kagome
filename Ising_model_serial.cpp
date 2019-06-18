@@ -38,7 +38,8 @@ int main(int argc, char **argv)
     {
         for (int j = halo; j < grid.ysize - halo; j++)
         {
-            grid(i, j) = static_cast<signed char>((Rand() > 0.5) ? -1 : 1); //randomly assign the spin state on each site
+            grid(i, j) = 1; //initiate the lattice to fully magnetized state
+            //grid(i, j) = static_cast<signed char>((Rand() > 0.5) ? -1 : 1); //randomly assign the spin state on each site
             //cout << "Local spin: " << grid(i,j) << endl;
         }
     } //randomly assign spin values to the lattice sites
