@@ -2,7 +2,7 @@ OPTIM+=-O3 -march=native
 CXX=g++-8 #mpicxx/mpiicpc
 CC=gcc-8
 CXXFLAGS+= -Wall -Wextra -std=c++14 $(OPTIM) -g #-fopenmp
-EXE=Ising_model_serial
+EXE=AFM_Kagome
 
 all: clean ${EXE}
 	  
