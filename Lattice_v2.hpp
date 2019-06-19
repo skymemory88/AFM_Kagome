@@ -38,10 +38,9 @@ class lattice
         std::vector<T> NN(int x, int y, int z); //Retrieve the values of all nearest neighbours        
         std::vector<int> NNindex(int x, int y); //Retrieve the indices of all nearest neighbours
         std::vector<int> NNindex(int x, int y, int z); //Retrieve the indices of all nearest neighbours       
-        std::vector<T> NN(int x, int y, int z);
         std::vector<T> NNN(int x, int y); //call on all next nearest neighbours
         std::vector<T> NNN(int x, int y, int z);
-        std::vector<int> NNNindex(int x, int y, int z); //Retrieve the indices of all nearest neighbours
+        std::vector<int> NNNindex(int x, int y); //Retrieve the indices of all nearest neighbours
 
         T& operator()(int x)
         {
@@ -156,8 +155,13 @@ std::vector<T> lattice<T, format>::NN(int x, int y) ////return the values of the
         return {val[index(x + 1, y)], val[index(x - 1, y)], val[index(x, y + 1)], val[index(x, y - 1)]};
     case LatticeForm::triangular:
         return {val[index(x + 1, y)], val[index(x - 1, y)], val[index(x, y + 1)], val[index(x, y - 1)], val[index(x + 1, y + 1)], val[index(x - 1, y - 1)]};
-    case LatticeForm::kagome: //kagome implements the same lattice structure as triangular except for, in practice in the code, skips every the other site in every the other row.
-        return {val[index(x + 1, y)], val[index(x - 1, y)], val[index(x, y + 1)], val[index(x, y - 1)], val[index(x + 1, y + 1)], val[index(x - 1, y - 1)]};
+    case LatticeForm::kagome: //Defined in such that the first row is the denser row, and even rows are less populated
+    {
+        if (y % 2 == 0)
+            return {val[index(x, y + 1)], val[index(x, y - 1)], val[index(x + 1, y + 1)], val[index(x - 1, y - 1)]};
+        else
+            return {val[index(x + 1, y)], val[index(x - 1, y)], val[index(x, y + 1)], val[index(x, y - 1)]};
+    }
     case LatticeForm::circular:
         return {val[index(x + 1, y)], val[index(x -1, y)]}; //To be defined
     default:  //default to square lattice
@@ -186,8 +190,13 @@ std::vector<int> lattice<T, format>::NNindex(int x, int y) //return the indices 
         return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1)};
     case LatticeForm::triangular:
         return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
-    case LatticeForm::kagome: //kagome implements the same lattice structure as triangular except for, in practice in the code, skips every the other site in every the other row.
-        return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
+    case LatticeForm::kagome: //Defined in such that the first row is the denser row, and even rows are less populated
+    {
+        if (y % 2 == 0)
+            return {index(x, y + 1), index(x, y - 1), index(x + 1, y + 1), index(x - 1, y - 1)};
+        else
+            return {index(x + 1, y), index(x - 1, y), index(x, y + 1), index(x, y - 1)};
+    }
     case LatticeForm::circular:
         return {index(x + 1, y), index(x -1, y)}; //To be defined
     default:  //default to square lattice
@@ -217,7 +226,12 @@ std::vector<T> lattice<T, format>::NNN(int x, int y) ////return the values of th
     case LatticeForm::triangular:
         return {val[index(x + 1, y + 2)], val[index(x - 1, y - 2)]};
     case LatticeForm::kagome:
-        return {val[index(x + 1, y + 2)], val[index(x - 1, y - 2)]};
+    {
+        if (y % 2 == 0)
+            return {val[index(x - 1, y + 1)], val[index(x + 1, y - 1)], val[index(x + 2, y + 1)], val[index(x - 2, y - 1)]};
+        else
+            return {val[index(x + 1, y + 2)], val[index(x - 1, y - 2)]};
+    }
     case LatticeForm::circular:
         return {val[index(x + 1, y)], val[index(x -1, y)]}; //To be defined
     default:  //default to square lattice
@@ -235,7 +249,12 @@ std::vector<int> lattice<T, format>::NNNindex(int x, int y) ////return the value
     case LatticeForm::triangular:
         return {index(x + 1, y + 2), index(x - 1, y - 2)};
     case LatticeForm::kagome:
-        return {index(x + 1, y + 2), index(x - 1, y - 2)};
+    {
+        if (y % 2 == 0)
+            return {index(x - 1, y + 1), index(x + 1, y - 1), index(x + 2, y + 1), index(x - 2, y - 1)};
+        else
+            return {index(x + 1, y + 2), index(x - 1, y - 2)};
+    }
     case LatticeForm::circular:
         return {index(x + 1, y), index(x -1, y)}; //To be defined
     default:  //default to square lattice
