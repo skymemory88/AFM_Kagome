@@ -76,7 +76,7 @@ class lattice
             case LatticeForm::triangular:
                 return x + y * xsize; 
             case LatticeForm::kagome: //kagome implements the same lattice structure as triangular except for, in practice in the code, skips every the other site in every the other row.
-                return x + y * xsize;
+                return ( (y % 2 ==0) ? x + (int)y/2 * (xsize + std::round(xsize/2) ) : x + (int)y/2 * (xsize + std::round(xsize/2) ) + xsize );
             case LatticeForm::circular:
                     return int(x * std::cos(y)) + int(x * std::sin(y)) * xsize; //x as r, and y as theta
             default:  //default to square lattice
